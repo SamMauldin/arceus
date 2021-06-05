@@ -1,0 +1,45 @@
+{
+  "name": "arceus",
+  "version": "1.0.0",
+  "description": "Arceus General Purpose Discord Bot",
+  "main": "out/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node out/index.js",
+    "docker:build": "docker build . -t arceus:latest",
+    "docker:start": "docker run -d --restart always --name arceus -p 3000:3000 --net trusted arceus:latest",
+    "docker:stop": "docker stop arceus; docker rm arceus",
+    "docker:logs": "docker logs arceus -f",
+    "docker:restart": "npm run docker:build; npm run docker:stop; npm run docker:start; npm run docker:logs;"
+  },
+  "author": "Sam Mauldin <sam@mauldin.me>",
+  "license": "UNLICENED",
+  "dependencies": {
+    "@discordjs/opus": "^0.5.0",
+    "@prisma/client": "^2.21.2",
+    "apollo-server-express": "^2.24.0",
+    "class-validator": "^0.13.1",
+    "date-fns": "^2.21.1",
+    "discord.js": "^12.5.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "ffmpeg-static": "^4.3.0",
+    "graphql": "^15.5.0",
+    "lodash": "^4.17.21",
+    "minio": "^7.0.18",
+    "node-fetch": "^2.6.1",
+    "reflect-metadata": "^0.1.13",
+    "shiro-trie": "^0.4.10",
+    "tslog": "^3.2.0",
+    "type-graphql": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.11",
+    "@types/lodash": "^4.14.168",
+    "@types/minio": "^7.0.7",
+    "@types/node": "^15.0.1",
+    "@types/node-fetch": "^2.5.10",
+    "prisma": "^2.21.2",
+    "typescript": "^4.2.4"
+  }
+}

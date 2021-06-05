@@ -1,0 +1,143 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Arceus Configuration K/V Store
+model ConfigItem {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Arceus Permissions
+model DiscordUser {
+  id            Int    @id @default(autoincrement())
+  discordUserId String @unique
+
+  roles Role[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  grants       Grant[]
+  discordUsers DiscordUser[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Grant {
+  id   Int    @id @default(autoincrement())
+  node String
+
+  role   Role @relation(fields: [roleId], references: [id])
+  roleId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([roleId, node])
+}
+
+// Arceus Web Session
+model Session {
+  id            Int     @id @default(autoincrement())
+  sessionToken  String  @unique @default(uuid())
+  loginToken    String  @unique @default(uuid())
+  discordUserId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Arceus Quarantine
+
+model QuarantinedRecord {
+  id      Int    @id @default(autoincrement())
+  content String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Arceus Ledger
+model LedgerUser {
+  id        Int    @id @default(autoincrement())
+  discordId String @unique
+  tag       String
+
+  LedgerMessage LedgerMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LedgerGuild {
+  id        Int    @id @default(autoincrement())
+  discordId String @unique
+  name      String
+
+  LedgerChannel LedgerChannel[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LedgerChannel {
+  id        Int    @id @default(autoincrement())
+  discordId String @unique
+  name      String
+
+  guild         LedgerGuild     @relation(fields: [ledgerGuildId], references: [id])
+  ledgerGuildId Int
+  LedgerMessage LedgerMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LedgerMessage {
+  id        Int      @id @default(autoincrement())
+  discordId String   @unique
+  content   String
+  embeds    Json?
+  pinned    Boolean  @default(false)
+  timestamp DateTime
+
+  channel         LedgerChannel      @relation(fields: [ledgerChannelId], references: [id])
+  ledgerChannelId Int
+  user            LedgerUser         @relation(fields: [ledgerUserId], references: [id])
+  ledgerUserId    Int
+  attachments     LedgerAttachment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ledgerChannelId, timestamp])
+}
+
+model LedgerAttachment {
+  id        Int    @id @default(autoincrement())
+  discordId String @unique
+  name      String
+
+  ledgerMessage   LedgerMessage @relation(fields: [ledgerMessageId], references: [id])
+  ledgerMessageId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ledgerMessageId])
+}
