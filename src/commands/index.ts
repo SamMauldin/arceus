@@ -4,6 +4,7 @@ import { register as registerEvalCommand } from './evaluate';
 import { register as registerPruneCommand } from './prune';
 import { register as registerAuthCommand } from './authenticate';
 import { register as registerRoleCommand } from './roles';
+import { register as registerCurrencyCommand } from './currency';
 
 export const registerCommands = () => {
   registerConfigCommand();
@@ -12,4 +13,5 @@ export const registerCommands = () => {
   registerPruneCommand();
   registerAuthCommand();
   registerRoleCommand();
+  registerCurrencyCommand();
 };

@@ -1,25 +1,6 @@
-import { User } from 'discord.js';
 import { CommandHandler, registerCommand } from '../global/commandRegistry';
-import { DEFAULT_ROLE_NAME } from '../global/permissions';
+import { getOrCreateUser } from '../global/permissions';
 import { prisma } from '../prisma';
-
-const getUser = async (discordUserId: string) => {
-  return await prisma.discordUser.upsert({
-    create: {
-      discordUserId,
-      roles: {
-        connect: [{ name: DEFAULT_ROLE_NAME }],
-      },
-    },
-    update: {},
-    where: {
-      discordUserId,
-    },
-    select: {
-      roles: { select: { name: true } },
-    },
-  });
-};
 
 const getMention = (arg: string): string | undefined => {
   const match = /<@!?(?<id>\d+)>/.exec(arg);
@@ -36,7 +17,7 @@ const roleUserGiveHandler: CommandHandler = async ({
   if (!role) return usage;
 
   // Ensure user exists
-  await getUser(user);
+  await getOrCreateUser(user);
 
   await prisma.discordUser.update({
     where: {
@@ -66,7 +47,7 @@ const roleUserTakeHandler: CommandHandler = async ({
   if (!role) return usage;
 
   // Ensure user exists
-  await getUser(user);
+  await getOrCreateUser(user);
 
   await prisma.discordUser.update({
     where: {
@@ -93,7 +74,7 @@ const roleUserListHandler: CommandHandler = async ({ args: [mention] }) => {
   if (!user) return usage;
 
   // Ensure user exists
-  const discordUser = await getUser(user);
+  const discordUser = await getOrCreateUser(user);
 
   return `User has: \`${discordUser.roles
     .map(({ name }) => name)

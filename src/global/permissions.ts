@@ -24,7 +24,7 @@ export const getOrCreateUser = async (discordUserId: string) => {
   const discordUser = await prisma.discordUser.findUnique({
     where: { discordUserId },
     select: {
-      roles: { select: { grants: true } },
+      roles: { select: { grants: true, name: true } },
     },
   });
 
@@ -42,7 +42,7 @@ export const getOrCreateUser = async (discordUserId: string) => {
       discordUserId,
     },
     select: {
-      roles: { select: { grants: true } },
+      roles: { select: { grants: true, name: true } },
     },
   });
 };
