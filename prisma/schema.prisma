@@ -62,16 +62,6 @@ model Session {
   updatedAt DateTime @updatedAt
 }
 
-// Arceus Quarantine
-
-model QuarantinedRecord {
-  id      Int    @id @default(autoincrement())
-  content String @unique
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 // Arceus Ledger
 model LedgerUser {
   id        Int    @id @default(autoincrement())
