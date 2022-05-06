@@ -15,7 +15,6 @@
   "author": "Sam Mauldin <sam@mauldin.me>",
   "license": "UNLICENED",
   "dependencies": {
-    "@discordjs/opus": "0.7.0",
     "@prisma/client": "3.13.0",
     "apollo-server-express": "^2.24.0",
     "class-validator": "^0.13.1",
@@ -23,7 +22,6 @@
     "discord.js": "13.6.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "ffmpeg-static": "^4.3.0",
     "graphql": "^15.5.0",
     "lodash": "^4.17.21",
     "minio": "^7.0.18",
