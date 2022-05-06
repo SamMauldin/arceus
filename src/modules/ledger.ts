@@ -50,7 +50,7 @@ const backfillHandler: CommandHandler = async ({ message }) => {
     statusReply.edit(getStatusContent()).catch(() => {});
   }, 1000 * 5);
 
-  for (const channel of guild.channels.cache.array()) {
+  for (const channel of guild.channels.cache.values()) {
     if (!channel.isText()) continue;
     if (!channel.viewable) continue;
     log.debug(`Fetching messages for channel ${channel.name}`);
@@ -82,10 +82,10 @@ const backfillHandler: CommandHandler = async ({ message }) => {
 export const setup = () => {
   client.on('message', processMessage);
   client.on('channelPinsUpdate', async (channel) => {
-    if (channel.type !== 'text') return;
+    if (channel.type !== 'GUILD_TEXT') return;
     const chan = channel as TextChannel;
     const pins = await chan.messages.fetchPinned(false);
-    for (const pin of pins.array()) {
+    for (const pin of pins.values()) {
       await processMessage(pin);
     }
   });
@@ -125,7 +125,7 @@ const processMessage = async (message: Message) => {
   if (!channelEnabled) return;
 
   // Upload attachments
-  for (const attachment of message.attachments.array()) {
+  for (const attachment of message.attachments.values()) {
     const ledgerAttachment = await prisma.ledgerAttachment.findUnique({
       where: { discordId: attachment.id },
     });
@@ -161,7 +161,7 @@ const processMessage = async (message: Message) => {
       create: {
         discordId: message.id,
         content: message.cleanContent,
-        embeds: message.embeds.map((embed) => embed.toJSON()),
+        embeds: message.embeds.map((embed) => embed.toJSON()) as any,
         timestamp: new Date(message.createdTimestamp),
         pinned: message.pinned,
         user: {

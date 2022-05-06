@@ -29,7 +29,7 @@ const processMember = async (userId: string, guildId: string) => {
     (a, b) => a.position - b.position
   );
   const categoryVoiceChannels = categoryChannels.filter(
-    (chan) => chan.type === 'voice'
+    (chan) => chan.type === 'GUILD_VOICE'
   );
   const afkChannelId = categoryVoiceChannels.last()?.id;
   if (!afkChannelId) return;
@@ -93,7 +93,7 @@ export const setup = () => {
     if (!userEnabled) return;
 
     if (userAfkInfo[userId]?.timeout) {
-      client.clearTimeout(userAfkInfo[userId]!.timeout!);
+      clearTimeout(userAfkInfo[userId]!.timeout!);
       userAfkInfo[userId]!.timeout = undefined;
     }
 
@@ -101,7 +101,7 @@ export const setup = () => {
 
     log.debug('Set timeout', { userId, guildId, timeoutLength });
 
-    const timeout = client.setTimeout(() => {
+    const timeout = setTimeout(() => {
       processMember(userId, guildId);
     }, timeoutLength);
 

@@ -7,7 +7,7 @@ const BIRATE_SET_INTERVAL = 1000 * 3;
 const moduleSlug = 'bitrate-enforcer';
 
 export const setup = () => {
-  client.setInterval(() => {
+  setInterval(() => {
     client.guilds.cache.forEach((guild) => {
       const guildEnabled =
         getConfigItem(
@@ -17,7 +17,7 @@ export const setup = () => {
       if (!guildEnabled) return;
 
       guild.channels.cache
-        .filter((chan) => chan.type === 'voice')
+        .filter((chan) => chan.type === 'GUILD_VOICE')
         .forEach((chan) => {
           const channel = chan as VoiceChannel;
 
@@ -28,7 +28,7 @@ export const setup = () => {
             ) === 'true';
           if (!channelEnabled) return;
 
-          if (!channel.editable) return;
+          if (!channel.manageable) return;
           if (channel.bitrate >= 64000) return;
 
           channel

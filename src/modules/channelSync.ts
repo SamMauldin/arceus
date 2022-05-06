@@ -13,7 +13,7 @@ const CHANNEL_SYNC_INTERVAL = 1000 * 3;
 const moduleSlug = 'channel-sync';
 
 export const setup = () => {
-  client.setInterval(() => {
+  setInterval(() => {
     client.guilds.cache.forEach((guild) => {
       const guildEnabled =
         getConfigItem(
@@ -23,9 +23,9 @@ export const setup = () => {
       if (!guildEnabled) return;
 
       guild.channels.cache
-        .filter((chan) => chan.type !== 'category')
+        .filter((chan) => chan.type !== 'GUILD_CATEGORY')
         .filter((chan) => Boolean(chan.parent))
-        .filter((chan) => chan.permissionsLocked === false)
+        .filter((chan) => !chan.isThread() && chan.permissionsLocked === false)
         .forEach((chan) => {
           const channelEnabled =
             getConfigItem(
@@ -34,7 +34,7 @@ export const setup = () => {
             ) === 'true';
           if (!channelEnabled) return;
 
-          const permissionOverwrites = chan.parent!.permissionOverwrites.map(
+          const permissionOverwrites = chan.parent!.permissionOverwrites.valueOf().map(
             (overwrite) => overwrite.toJSON()
           );
           chan
