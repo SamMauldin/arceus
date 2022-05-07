@@ -1,23 +1,31 @@
 import { prisma } from '../prisma';
 import { CommandHandler, registerCommand } from '../global/commandRegistry';
 
-const CURRENCY_SUFFIX = ' gold';
+export const CURRENCY_SUFFIX = ' gold';
 
 const getMention = (arg: string): string | undefined => {
   const match = /<@!?(?<id>\d+)>/.exec(arg);
   return match?.groups?.id;
 };
 
-const parseAmount = (amount: string, nonZero: boolean): bigint | null => {
+export const parseAmount = (
+  amount: string | undefined,
+  nonZero: boolean
+): number | null => {
+  if (amount === undefined) return null;
+
   try {
-    const parsed = BigInt(amount);
-    if (parsed < 0n) return null;
-    if (nonZero && parsed == 0n) return null;
+    const parsed = parseInt(amount);
+    if (parsed < 0 || isNaN(parsed)) return null;
+    if (nonZero && parsed == 0) return null;
     return parsed;
   } catch (e) {
     return null;
   }
 };
+
+export const formatAmount = (amount: number): string =>
+  `${amount.toLocaleString('en-US')}${CURRENCY_SUFFIX}`;
 
 const balance: CommandHandler = async ({ executor, args: [mention] }) => {
   const usage = 'Usage: gold:balance [@user]';

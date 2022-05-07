@@ -5,6 +5,7 @@ import { setup as setupChannelSync } from './channelSync';
 import { setup as setupWeb } from './web';
 import { setup as setupLedger } from './ledger';
 import { setup as setupBotEnforcer } from './botEnforcer';
+import { setup as setupCasino } from './casino';
 
 export const setup = async () => {
   setupAfkManager();
@@ -14,4 +15,5 @@ export const setup = async () => {
   await setupWeb();
   setupLedger();
   setupBotEnforcer();
+  setupCasino();
 };
