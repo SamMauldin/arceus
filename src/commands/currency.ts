@@ -8,10 +8,18 @@ const getMention = (arg: string): string | undefined => {
   return match?.groups?.id;
 };
 
-export const balance: CommandHandler = async ({
-  executor,
-  args: [mention],
-}) => {
+const parseAmount = (amount: string, nonZero: boolean): bigint | null => {
+  try {
+    const parsed = BigInt(amount);
+    if (parsed < 0n) return null;
+    if (nonZero && parsed == 0n) return null;
+    return parsed;
+  } catch (e) {
+    return null;
+  }
+};
+
+const balance: CommandHandler = async ({ executor, args: [mention] }) => {
   const usage = 'Usage: gold:balance [@user]';
 
   let targetUserId = executor.id;
@@ -32,10 +40,28 @@ export const balance: CommandHandler = async ({
   return user.balance.toLocaleString('en-US') + CURRENCY_SUFFIX;
 };
 
-export const give: CommandHandler = async ({
-  executor,
-  args: [mention, amount],
-}) => {
+const print: CommandHandler = async ({ args: [mention, amount] }) => {
+  const usage = 'Usage: gold:print [@user] [amount]';
+
+  const recipientDiscordId = getMention(mention);
+  if (!recipientDiscordId) return usage;
+  const recipient = await prisma.discordUser.findUnique({
+    where: { discordUserId: recipientDiscordId },
+  });
+  if (!recipient) return 'User not found.';
+
+  const parsedAmount = parseAmount(amount, true);
+  if (!parsedAmount) return usage;
+
+  await prisma.discordUser.update({
+    data: { balance: { increment: parsedAmount } },
+    where: { discordUserId: recipientDiscordId },
+  });
+
+  return `Printed!`;
+};
+
+const give: CommandHandler = async ({ executor, args: [mention, amount] }) => {
   const usage = 'Usage: gold:give [@user] [amount]';
 
   const sender = await prisma.discordUser.findUnique({
@@ -51,15 +77,12 @@ export const give: CommandHandler = async ({
   });
   if (!recipient) return 'User not found.';
 
-  let parsedAmount: bigint;
+  const parsedAmount = parseAmount(amount, true);
+  if (!parsedAmount) return usage;
 
-  try {
-    parsedAmount = BigInt(amount);
-  } catch (_) {
-    return usage;
-  }
-
-  if (parsedAmount <= 0n) return 'Must transfer an amount greater than 0.';
+  // Real check is in transaction for consistency, but this is for a proper error
+  if (parsedAmount > sender.balance)
+    return 'Cannot transfer an amount greater than your balance';
 
   return await prisma.$transaction(async (prisma) => {
     const sender = await prisma.discordUser.update({
@@ -69,8 +92,7 @@ export const give: CommandHandler = async ({
       },
     });
 
-    if (sender.balance < 0)
-      return 'You cannot transfer an amount greater than your current balance.';
+    if (sender.balance < 0) throw new Error('Balance dropped below zero');
 
     await prisma.discordUser.update({
       data: { balance: { increment: parsedAmount } },
@@ -79,6 +101,24 @@ export const give: CommandHandler = async ({
 
     return 'Transfer complete!';
   });
+};
+
+const rich: CommandHandler = async () => {
+  const richest = await prisma.discordUser.findMany({
+    orderBy: [{ balance: 'desc' }],
+    take: 5,
+  });
+
+  const richestText = richest
+    .map(
+      (user) =>
+        `<@${user.discordUserId}>: ${user.balance.toLocaleString(
+          'en-US'
+        )}${CURRENCY_SUFFIX}`
+    )
+    .join('\n');
+
+  return `Richest Users:\n${richestText}`;
 };
 
 export const register = () => {
@@ -94,5 +134,19 @@ export const register = () => {
     description: 'Give gold to another user',
     handler: give,
     permissionNode: 'currency:basic:give',
+  });
+
+  registerCommand({
+    name: 'gold:print',
+    description: 'Print gold from thin air',
+    handler: print,
+    permissionNode: 'currency:admin:print',
+  });
+
+  registerCommand({
+    name: 'gold:rich',
+    description: 'See users with the most currency',
+    handler: rich,
+    permissionNode: 'currency:basic:rich',
   });
 };
