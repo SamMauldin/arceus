@@ -6,6 +6,7 @@ import { setup as setupWeb } from './web';
 import { setup as setupLedger } from './ledger';
 import { setup as setupBotEnforcer } from './botEnforcer';
 import { setup as setupCasino } from './casino';
+import { setup as setupGoldDistributor } from './goldDistributor';
 
 export const setup = async () => {
   setupAfkManager();
@@ -16,4 +17,5 @@ export const setup = async () => {
   setupLedger();
   setupBotEnforcer();
   setupCasino();
+  setupGoldDistributor();
 };
