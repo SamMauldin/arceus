@@ -204,12 +204,22 @@ export const setup = () => {
                 returnMult,
               ] of state.nextActionPrompt.returnMultipliers.entries()) {
                 const player = state.players[playerIdx];
+                const winnings = Math.floor(returnMult * player.wager);
                 const discordUser = await prisma.discordUser.update({
                   where: { discordUserId: player.discordUserId },
                   data: {
                     balance: {
-                      increment: Math.floor(returnMult * player.wager),
+                      increment: winnings,
                     },
+                  },
+                });
+
+                await prisma.casinoRecord.create({
+                  data: {
+                    userId: discordUser.id,
+                    wager: player.wager,
+                    winnings,
+		    game: "blackjack"
                   },
                 });
 
@@ -321,8 +331,8 @@ export const setup = () => {
 
           const amount = parseAmount(rawAmount, false) ?? 0;
 
-	  // Ensure user exists
-	  await getOrCreateUser(msg.author.id);
+          // Ensure user exists
+          await getOrCreateUser(msg.author.id);
 
           const player = await prisma.discordUser.findUnique({
             where: { discordUserId: msg.author.id },
