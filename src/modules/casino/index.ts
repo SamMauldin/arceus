@@ -163,7 +163,7 @@ export const setup = () => {
               )}`
             );
           } else if (state.nextActionPrompt.type === 'player-choice') {
-            if (isBefore(addSeconds(state.lastAction, 15), state.lastAction)) {
+            if (isBefore(addSeconds(state.lastAction, 15), new Date())) {
               channel.send(
                 `${formatMention(
                   state.players[state.nextActionPrompt.player].discordUserId
