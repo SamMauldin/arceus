@@ -1,3 +1,5 @@
+import { randomInt } from 'crypto';
+
 const suits = ['C', 'D', 'H', 'S'] as const;
 const ranks = [
   'A',
@@ -25,7 +27,7 @@ const unshuffledDeck = () =>
 
 const shuffleInplace = (cards: Card[]) => {
   for (let i = cards.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = randomInt(i);
     [cards[i], cards[j]] = [cards[j], cards[i]];
   }
 };
