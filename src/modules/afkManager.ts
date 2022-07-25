@@ -1,6 +1,7 @@
 import { log as parentLog } from '../log';
 import { enabledConfigName, getConfigItem } from '../global/configuration';
 import { client } from '../discord';
+import { ChannelType } from 'discord.js';
 
 const log = parentLog.getChildLogger({ name: 'AFK Manager' });
 
@@ -25,11 +26,11 @@ const processMember = async (userId: string, guildId: string) => {
     timeout: undefined,
   };
 
-  const categoryChannels = member.voice.channel.parent.children.sort(
+  const categoryChannels = member.voice.channel.parent.children.cache.sort(
     (a, b) => a.position - b.position
   );
   const categoryVoiceChannels = categoryChannels.filter(
-    (chan) => chan.type === 'GUILD_VOICE'
+    (chan) => chan.type === ChannelType.GuildVoice
   );
   const afkChannelId = categoryVoiceChannels.last()?.id;
   if (!afkChannelId) return;

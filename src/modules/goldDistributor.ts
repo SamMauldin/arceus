@@ -1,3 +1,4 @@
+import { ChannelType } from 'discord.js';
 import { client } from '../discord';
 import { enabledConfigName, getConfigItem } from '../global/configuration';
 import { prisma } from '../prisma';
@@ -20,7 +21,7 @@ export const setup = () => {
         continue;
 
       for (const channel of guild.channels.cache.values()) {
-        if (channel.type !== 'GUILD_VOICE') continue;
+        if (channel.type !== ChannelType.GuildVoice) continue;
 
         for (const member of channel.members.values()) {
           if (member.user.bot || member.voice.mute || member.voice.deaf)

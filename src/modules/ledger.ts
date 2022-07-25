@@ -1,6 +1,12 @@
 import { prisma } from '../prisma';
 import { client } from '../discord';
-import { Message, MessageAttachment, Snowflake, TextChannel } from 'discord.js';
+import {
+  ChannelType,
+  Message,
+  Snowflake,
+  TextChannel,
+  Attachment,
+} from 'discord.js';
 import { CommandHandler, registerCommand } from '../global/commandRegistry';
 import fetch from 'node-fetch';
 import { enabledConfigName, getConfigItem } from '../global/configuration';
@@ -51,7 +57,7 @@ const backfillHandler: CommandHandler = async ({ message }) => {
   }, 1000 * 5);
 
   for (const channel of guild.channels.cache.values()) {
-    if (!channel.isText()) continue;
+    if (channel.type !== ChannelType.GuildText) continue;
     if (!channel.viewable) continue;
     log.debug(`Fetching messages for channel ${channel.name}`);
 
@@ -82,7 +88,7 @@ const backfillHandler: CommandHandler = async ({ message }) => {
 export const setup = () => {
   client.on('message', processMessage);
   client.on('channelPinsUpdate', async (channel) => {
-    if (channel.type !== 'GUILD_TEXT') return;
+    if (channel.type !== ChannelType.GuildText) return;
     const chan = channel as TextChannel;
     const pins = await chan.messages.fetchPinned(false);
     for (const pin of pins.values()) {
@@ -104,7 +110,7 @@ export const setup = () => {
   });
 };
 
-const attachmentFileKey = (attachment: MessageAttachment) =>
+const attachmentFileKey = (attachment: Attachment) =>
   `${attachment.id}-${encodeURIComponent(attachment.name || 'media.dat')}`;
 
 const processMessage = async (message: Message) => {

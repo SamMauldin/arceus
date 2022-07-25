@@ -5,6 +5,7 @@ import {
   getConfigItem,
   setConfigItem,
 } from '../global/configuration';
+import { ChannelType } from 'discord.js';
 
 const log = parentLog.getChildLogger({ name: 'Channel Sync' });
 
@@ -23,7 +24,7 @@ export const setup = () => {
       if (!guildEnabled) return;
 
       guild.channels.cache
-        .filter((chan) => chan.type !== 'GUILD_CATEGORY')
+        .filter((chan) => chan.type !== ChannelType.GuildCategory)
         .filter((chan) => Boolean(chan.parent))
         .filter((chan) => !chan.isThread() && chan.permissionsLocked === false)
         .forEach((chan) => {
@@ -34,14 +35,14 @@ export const setup = () => {
             ) === 'true';
           if (!channelEnabled) return;
 
-          const permissionOverwrites = chan.parent!.permissionOverwrites.valueOf().map(
-            (overwrite) => overwrite.toJSON()
-          );
+          const permissionOverwrites = chan
+            .parent!.permissionOverwrites.valueOf()
+            .map((overwrite) => overwrite.toJSON());
           chan
-            .edit(
-              { permissionOverwrites } as any,
-              'Channel Sync detected unlocked permissions'
-            )
+            .edit({
+              permissionOverwrites: permissionOverwrites as any,
+              reason: 'Channel Sync detected unlocked permissions',
+            })
             .catch(async (err) => {
               if (err) {
                 log.warn(

@@ -1,4 +1,4 @@
-import { VoiceChannel } from 'discord.js';
+import { ChannelType, VoiceChannel } from 'discord.js';
 import { client } from '../discord';
 import { enabledConfigName, getConfigItem } from '../global/configuration';
 
@@ -17,7 +17,7 @@ export const setup = () => {
       if (!guildEnabled) return;
 
       guild.channels.cache
-        .filter((chan) => chan.type === 'GUILD_VOICE')
+        .filter((chan) => chan.type === ChannelType.GuildVoice)
         .forEach((chan) => {
           const channel = chan as VoiceChannel;
 

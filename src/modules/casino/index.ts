@@ -14,6 +14,7 @@ import {
 } from './blackjack';
 import assert from 'assert';
 import { getOrCreateUser } from '../../global/permissions';
+import { ChannelType } from 'discord.js';
 
 const moduleSlug = 'casino';
 
@@ -114,7 +115,7 @@ export const setup = () => {
         const channel = await client.channels
           .fetch(channelId)
           .catch(() => null);
-        if (!channel || !channel.isText()) {
+        if (!channel || channel.type !== ChannelType.GuildText) {
           channelStates.delete(channelId);
           continue;
         }
@@ -219,7 +220,7 @@ export const setup = () => {
                     userId: discordUser.id,
                     wager: player.wager,
                     winnings,
-		    game: "blackjack"
+                    game: 'blackjack',
                   },
                 });
 
