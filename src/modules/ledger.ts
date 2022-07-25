@@ -86,7 +86,7 @@ const backfillHandler: CommandHandler = async ({ message }) => {
 };
 
 export const setup = () => {
-  client.on('message', processMessage);
+  client.on('messageCreate', processMessage);
   client.on('channelPinsUpdate', async (channel) => {
     if (channel.type !== ChannelType.GuildText) return;
     const chan = channel as TextChannel;

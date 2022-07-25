@@ -41,7 +41,7 @@ export const registerCommand = (command: Command) => {
 };
 
 export const registerHandler = () => {
-  client.on('message', async (message) => {
+  client.on('messageCreate', async (message) => {
     if (!message.content) return;
     if (message.author.bot) return;
 
