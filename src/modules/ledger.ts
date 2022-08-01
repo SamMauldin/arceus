@@ -111,7 +111,9 @@ export const setup = () => {
 };
 
 const attachmentFileKey = (attachment: Attachment) =>
-  `${attachment.id}-${encodeURIComponent(attachment.name || 'media.dat')}`;
+  `attachments/${attachment.id}-${encodeURIComponent(
+    attachment.name || 'media.dat'
+  )}`;
 
 const processMessage = async (message: Message) => {
   if (!message.guild) return;
@@ -181,6 +183,7 @@ const processMessage = async (message: Message) => {
             create: {
               discordId: message.channel.id,
               name: (message.channel as TextChannel).name,
+              type: 'TEXT',
               guild: {
                 connectOrCreate: {
                   create: {

@@ -5,3 +5,4 @@ export * from './types';
 export * from './ledgerChannel';
 export * from './ledgerMessage';
 export * from './ledgerAttachment';
+export * from './ledgerVoiceSnippet';

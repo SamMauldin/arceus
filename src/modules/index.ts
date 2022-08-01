@@ -7,6 +7,7 @@ import { setup as setupLedger } from './ledger';
 import { setup as setupBotEnforcer } from './botEnforcer';
 import { setup as setupCasino } from './casino';
 import { setup as setupGoldDistributor } from './goldDistributor';
+import { setup as setupJarvis } from './jarvis';
 
 export const setup = async () => {
   setupAfkManager();
@@ -18,4 +19,5 @@ export const setup = async () => {
   setupBotEnforcer();
   setupCasino();
   setupGoldDistributor();
+  setupJarvis();
 };

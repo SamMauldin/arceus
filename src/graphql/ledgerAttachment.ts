@@ -15,9 +15,9 @@ export class LedgerAttachment {
 export class LedgerAttachmentResolver {
   @FieldResolver(() => String)
   async signedUrl(@Root() ledgerAttachment: LedgerAttachment): Promise<string> {
-    const minioName = `${ledgerAttachment.discordId}-${encodeURIComponent(
-      ledgerAttachment.name
-    )}`;
+    const minioName = `attachments/${
+      ledgerAttachment.discordId
+    }-${encodeURIComponent(ledgerAttachment.name)}`;
 
     return await minio.presignedGetObject(
       process.env.MINIO_BUCKET_LEDGER!,

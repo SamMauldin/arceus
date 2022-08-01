@@ -10,6 +10,7 @@ import {
   LedgerGuildResolver,
   LedgerChannelResolver,
   LedgerAttachmentResolver,
+  LedgerVoiceSnippetResolver,
 } from '../graphql';
 import { prisma } from '../prisma';
 import { subDays, subMinutes } from 'date-fns';
@@ -36,6 +37,7 @@ export const setup = async () => {
       LedgerGuildResolver,
       LedgerChannelResolver,
       LedgerAttachmentResolver,
+      LedgerVoiceSnippetResolver,
     ],
     authChecker,
   });

@@ -11,6 +11,7 @@ import { hasPermission } from '../global/permissions';
 import { prisma } from '../prisma';
 import { Authorized } from './authorization';
 import { LedgerMessage } from './ledgerMessage';
+import { LedgerVoiceSnippet } from './ledgerVoiceSnippet';
 
 @ObjectType()
 export class LedgerChannel {
@@ -58,6 +59,28 @@ export class LedgerChannelResolver {
       },
       orderBy: { timestamp: 'desc' },
       include: { user: true, attachments: true },
+    });
+  }
+
+  @Query(() => [LedgerVoiceSnippet])
+  async voice_snippets(
+    @Arg('channelDiscordId') channelDiscordId: string,
+    @Arg('before', { nullable: true }) before: Date
+  ): Promise<LedgerVoiceSnippet[]> {
+    const beforeArg = before ? before : undefined;
+    const ledgerChannel = await prisma.ledgerChannel.findUnique({
+      where: { discordId: channelDiscordId },
+    });
+    if (!ledgerChannel) return [];
+
+    return await prisma.ledgerVoiceSnippet.findMany({
+      take: 50,
+      where: {
+        ledgerChannelId: ledgerChannel.id,
+        startDate: { lt: beforeArg },
+      },
+      orderBy: { startDate: 'desc' },
+      include: { user: true },
     });
   }
 

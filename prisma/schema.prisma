@@ -84,6 +84,7 @@ model LedgerUser {
   tag       String
 
   LedgerMessage LedgerMessage[]
+  LedgerVoiceSnippet LedgerVoiceSnippet[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -104,13 +105,21 @@ model LedgerChannel {
   id        Int    @id @default(autoincrement())
   discordId String @unique
   name      String
+  type ChannelType
 
   guild         LedgerGuild     @relation(fields: [ledgerGuildId], references: [id])
   ledgerGuildId Int
+
   LedgerMessage LedgerMessage[]
+  LedgerVoiceSnippet LedgerVoiceSnippet[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum ChannelType {
+  TEXT
+  VOICE
 }
 
 model LedgerMessage {
@@ -145,4 +154,22 @@ model LedgerAttachment {
   updatedAt DateTime @updatedAt
 
   @@index([ledgerMessageId])
+}
+
+model LedgerVoiceSnippet {
+  id	Int	@id @default(autoincrement())
+  startDate	DateTime
+
+  snippetId String @unique
+
+  transcriptionStartedAt	DateTime?
+  transcription String?
+
+  channel LedgerChannel @relation(fields: [ledgerChannelId], references: [id])
+  ledgerChannelId Int
+  user	LedgerUser	@relation(fields: [ledgerUserId], references: [id])
+  ledgerUserId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
