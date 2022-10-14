@@ -308,7 +308,7 @@ export const setup = () => {
             });
 
             msg.channel.send(
-              'Starting blackjack! Type `join [wager]` to join with a given wager (can be zero)'
+              'Starting blackjack! Type `join [wager]` or `join all` to join with a given wager (can be zero)'
             );
           }
         }
@@ -328,10 +328,6 @@ export const setup = () => {
             return;
           }
 
-          const [rawAmount] = args;
-
-          const amount = parseAmount(rawAmount, false) ?? 0;
-
           // Ensure user exists
           await getOrCreateUser(msg.author.id);
 
@@ -343,6 +339,12 @@ export const setup = () => {
             msg.reply('Could not find your user.');
             return;
           }
+
+          const [rawAmount] = args;
+          const amount =
+            rawAmount === 'all'
+              ? player.balance
+              : parseAmount(rawAmount, false) ?? 0;
 
           // Check for friendly message, real check is in transaction
           if (player.balance < amount) {
